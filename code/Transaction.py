@@ -1,22 +1,23 @@
 import hashlib, json, datetime
 
+class NewTransaction:
+    def newTx(_to: str, _from: str, amount: float) -> str:
+        unique_id = self.generateIDh()  # hash of to, from, amount, timestamp
 
-def jsonToTx(_str):
-    json_obj = json.loads(_str)
-    return Transaction(json_obj['to_node'], json_obj['from_node'], json_obj['amount'], json_obj['timestamp'])
-
+    def generateIDh():
+        hashMe = self.toJSON()
+        return hashlib.sha256(hashMe.encode()).hexdigest()
 
 class Transaction:
 
-    def __init__(self, _to: str, _from: str, amount: float, timestamp: str = ''):
-        self.to_node = _to #node id
-        self.from_node = _from #own id
-        self.amount = amount
-        if timestamp:  # if there is an incoming timestamp (not empty string), i.e. building an existing tx, set it
-            self.timestamp = timestamp
-        else:  # otherwise generate new timestamp
-            self.timestamp = str(datetime.datetime.now())
-        self.unique_id = self.generateIDh()  # hash of to, from, amount, timestamp
+    def __init__(self, json_string):
+        json_obj = json.loads(json_string)
+        self.to_node = json_obj['to_node'] #node id
+        self.from_node =json_obj['from_node'] #own id
+        self.amount = json_obj['amount']
+        self.timestamp = json_obj['timestamp']
+        self.uniqueID = json_obj
+
 
     def toJSON(self):
         self_dict = {
@@ -26,10 +27,6 @@ class Transaction:
             'timestamp': self.timestamp
         }
         return json.dumps(self_dict)
-
-    def generateIDh(self):
-        hashMe = self.toJSON()
-        return hashlib.sha256(hashMe.encode()).hexdigest()
 
     def __str__(self):
         return json.dumps(self.__dict__)
