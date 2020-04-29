@@ -13,11 +13,20 @@ verify()
 
 1B. Ledger
 *readable file
+???
 
 2. Blocks 
 * Consists of Transactions
 * Gathers Transactions
 * Verified by nodes on incoming block
+* State of transactions
+
+Attributes
+-prevHash
+-timestamp
+-nonce
+-transactions (would usually just be merkle root)
+-
 
 3. BlockChain
 * Consists of Blocks
@@ -50,14 +59,18 @@ Single Node Actions
 -1. check for transactions
 0. get previous block hash (longest chain)
 1. Gather transactions into group (merkle tree?)
-2. Hash transaction root
+2. Hash block
 3. Mine block containing group (find nonce satisfying difficulty)
 4. Send block to network and update personal balance
 
 # receive block -> thread? 
 0. discard any blocks being mined currently
 1. verify block (verify merkle root, hash block header-> matches difficulty)
-    -> if invalid, discard
+    a. does previous block exist?
+    b. current block timestamp > previous block timestamp?
+    c. valid proof of work? (i.e. nonce hash has correct number of zeroes)
+    d. apply transactions in block (based on previous block state) and make sure they are all valid
+    -> if invalid during any of these steps, discard
 2. add to prev block
 3. update "branch" status (trim if trimming needed)
 4. update ledger with transactions
