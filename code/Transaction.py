@@ -40,7 +40,6 @@ class Transaction:
 
 if __name__ == '__main__':
     t = Transaction(_to='node1', _from='node2', amount=12.5)
-    t.unique_id = t.generateIDh()
     print(str(t))
     jsonT = str(t)
     backToT = Transaction(json_string=jsonT)
