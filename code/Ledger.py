@@ -14,8 +14,11 @@ class Ledger:
         for v in change.values():
             if v < 0:
                 return False
-        self.blockchain_balances.insert(index, change)
+        self.add_transaction(change, index)
         return True
+
+    def add_transaction(self, balance, index):
+        self.blockchain_balances.insert(index, balance)
 
     def get_curr_balance_for_node(self, node):
         return self.blockchain_balances[-1][node]

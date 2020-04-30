@@ -1,4 +1,4 @@
-import json, hashlib, datetime
+import json, hashlib, datetime, copy
 from Transaction import Transaction
 
 
@@ -8,22 +8,23 @@ class Block:
                  transactions: list = [], hash: str = '', index: int = 0):
         if json_string != '':
             json_obj = json.loads(json_string)
+            self.index = int(json_obj['index'])
             self.prevHash = json_obj['prevHash']
             self.timestamp = json_obj['timestamp']
             self.nonce = int(json_obj['nonce'])
             self.transactions = [Transaction(x) for x in json_obj['transactions']]
             self.hash = json_obj['hash']
-            self.index = int(json_obj['index'])
+
         else:
+            self.index = index
             self.prevHash = prevHash
             self.timestamp = timestamp
             self.nonce = nonce
             self.transactions = transactions
-            self.index = index
             self.hash = hash
 
     def __str__(self):
-        blockDict = self.__dict__
+        blockDict = copy.deepcopy(self.__dict__)
         blockDict['transactions'] = [str(tx) for tx in blockDict['transactions']]
         return json.dumps(blockDict)
 
@@ -36,7 +37,7 @@ class Block:
         pass
 
     def verify_proof_of_work(self):
-        block_dict = self.__dict__
+        block_dict = copy.deepcopy(self.__dict__)
         block_dict['transactions'] = [str(tx) for tx in block_dict['transactions']]
         # print("\nblock_dict in json format:\n", json.dumps(block_dict), '\n')
         incoming_hash = block_dict.pop('hash')
@@ -62,7 +63,7 @@ if __name__ == '__main__':
     new_block['hash'] = _hash
 
     new_block_json = json.dumps(new_block)
-    b = Block(new_block_json)
+    b = Block(json_string=new_block_json)
     print('\njson representation of block b: \n', str(b), '\n')
     b2 = Block(str(b))
     print(b2.verify_proof_of_work())
