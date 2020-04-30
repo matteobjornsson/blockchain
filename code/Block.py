@@ -38,12 +38,12 @@ class Block:
     def verify_proof_of_work(self):
         block_dict = self.__dict__
         block_dict['transactions'] = [str(tx) for tx in block_dict['transactions']]
-        print("\nblock_dict in json format:\n", json.dumps(block_dict), '\n')
+        # print("\nblock_dict in json format:\n", json.dumps(block_dict), '\n')
         incoming_hash = block_dict.pop('hash')
-        print('print json block to verify, sans hash, followed by hash\n', json.dumps(block_dict), incoming_hash)
+        # print('print json block to verify, sans hash, followed by hash\n', json.dumps(block_dict), incoming_hash)
         verify_hash = hashlib.sha256(json.dumps(block_dict).encode()).hexdigest()
-        print('verify_hash', verify_hash)
-        print(type(verify_hash), type(incoming_hash))
+        # print('verify_hash', verify_hash)
+        # print(type(verify_hash), type(incoming_hash))
         return verify_hash == incoming_hash
 
 

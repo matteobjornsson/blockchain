@@ -1,6 +1,8 @@
 from Chain import *
 from Ledger import *
 from Transaction import Transaction
+from Ledger import Ledger
+from BlockChain import BlockChain
 import datetime, json, hashlib
 
 
@@ -12,8 +14,8 @@ class Node:
     def __init__(self):
         node_id = 0
         # messenger = ''#Messenger()
-        # main_blockchain = BlockChain()
-        # ledger = Ledger()
+        self.ledger = Ledger()
+        self.blockchain = BlockChain(self.ledger)
         peers = []
         transaction_queue = []
 
