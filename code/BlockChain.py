@@ -1,11 +1,21 @@
+from Block import Block
+from Transaction import Transaction
+import datetime, hashlib, json
+
 
 class BlockChain:
-    last_block = None # represents the block with longest chain length
-    chain = None #NumpyArray
 
     def __init__(self):
-        filename = ''
-        blocks = []
+        self.blockchain = [Block(
+            prevHash='0000000000000000000000000000000000000000000000000000000000000000',
+            timestamp= str(datetime.datetime.now()),
+            nonce= 0,
+            transactions= [],
+            index= 0,
+            hash='00000000000000000000000000000000000000000000000000000000000fffff'
+        )]
+        #pickledump and jsondump the chain to disk
+
     def process_block(self, block) -> bool:
         # verify proof of work
         # verify transactions -> self.ledger.verifytx(block.tx)
