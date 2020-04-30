@@ -1,7 +1,6 @@
 
 class BlockChain:
     last_block = None # represents the block with longest chain length
-    branches = [] # list of pointer pairs defining branches: tip & fork, first entry = tip and genesis
     chain = None #NumpyArray
 
     def __init__(self):
