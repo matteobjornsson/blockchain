@@ -1,4 +1,4 @@
-import json
+import json, hashlib, datetime
 from Transaction import Transaction
 
 
@@ -19,8 +19,8 @@ class Block:
             self.timestamp = timestamp
             self.nonce = nonce
             self.transactions = transactions
-            self.hash = hash
             self.index = index
+            self.hash = hash
 
     def __str__(self):
         blockDict = self.__dict__
@@ -31,13 +31,38 @@ class Block:
         #  start state from ledger is passed through from blockchain -> apply transactions
         #  I was thinking it would depend on where the method gets called
         # Yeah, not sure yet... But makes sense!
+
+        # we will have to implement our balance sheet first before writing this method, I think?
         pass
+
+    def verify_proof_of_work(self):
+        block_dict = self.__dict__
+        block_dict['transactions'] = [str(tx) for tx in block_dict['transactions']]
+        print("\nblock_dict in json format:\n", json.dumps(block_dict), '\n')
+        incoming_hash = block_dict.pop('hash')
+        print('print json block to verify, sans hash, followed by hash\n', json.dumps(block_dict), incoming_hash)
+        verify_hash = hashlib.sha256(json.dumps(block_dict).encode()).hexdigest()
+        print('verify_hash', verify_hash)
+        print(type(verify_hash), type(incoming_hash))
+        return verify_hash == incoming_hash
 
 
 if __name__ == '__main__':
-    txs = [Transaction(_to='node1', _from='node2', amount=12.5), Transaction(_to='node3', _from='node2', amount=200.1)]
-    b = Block(prevHash='222222222222222', timestamp='10:20pm', nonce='5',
-              transactions=txs, hash='asdfasdfasdfasdf', index=5)
-    print(str(b))
+    new_block = {
+        'prevHash':'e4d0ab7c39bbb38c2df7ee2689ae98f52a6099a5932b58c7339f8763dbaea2ec',
+        'timestamp' : str(datetime.datetime.now()),
+        'nonce': 5,
+        'transactions': [Transaction(_to='node1', _from='node2', amount=12.5),
+                         Transaction(_to='node3', _from='node2', amount=200.1)],
+        'index': 4
+    }
+    new_block['transactions'] = [str(tx) for tx in new_block['transactions']]
+    print('\n this is the exact string we are hashing for block b:\n', json.dumps(new_block),'\n')
+    _hash = hashlib.sha256(json.dumps(new_block).encode()).hexdigest()
+    new_block['hash'] = _hash
+
+    new_block_json = json.dumps(new_block)
+    b = Block(new_block_json)
+    print('\njson representation of block b: \n', str(b), '\n')
     b2 = Block(str(b))
-    print(str(b2))
+    print(b2.verify_proof_of_work())
