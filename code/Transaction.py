@@ -37,7 +37,6 @@ class Transaction:
         return _in.unique_id == self.unique_id
 
 
-
 if __name__ == '__main__':
     t = Transaction(_to='node1', _from='node2', amount=12.5)
     print(str(t))

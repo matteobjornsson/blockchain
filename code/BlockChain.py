@@ -20,9 +20,9 @@ class BlockChain:
 
     def process_block(self, block) -> bool:
         if block.verify_proof_of_work():
-            #print('proof of work check passed')
+            print('proof of work check passed')
             if self.ledger.verify_and_add_transaction(block.transactions, block.index):
-                #print('verify tx check passed')
+                print('verify tx check passed')
                 self.add_block(block)
                 return True
         return False
