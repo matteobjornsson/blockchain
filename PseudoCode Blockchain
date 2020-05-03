@@ -112,3 +112,20 @@ GRADING
 2 - signed block does not exceed p for client
 2 - verifiers get reward for creating a block
 2 - verifiers get reward for signing a block
+
+Part I:
+write mechanisms for sending and receiving transactions
+    (will need to differentiate between block msg and transaction msg)
+need to validate transactions first before mining into block, otherwise entire block will become invalid from one tx
+test 4 instances local using SQS
+discover longest chain protocol
+Document code
+write blockchain and ledger to disk
+
+Thread:
+while true:
+    new block = mine_block()
+    if new_block:
+        send new block
+    else:
+        continue
