@@ -5,6 +5,7 @@ from BlockChain import BlockChain
 from Block import Block
 from Messenger import Messenger
 from threading import Thread
+from time import sleep
 import datetime, json, hashlib, copy
 
 class Node:
@@ -25,13 +26,13 @@ class Node:
 
     def start_mining_thread(self):
         t = Thread(
-            target=self.create_mining_message_thread,
-            daemon=True
+            target=self.mining_message_thread
         )
         t.start()
         return t
 
     def handle_incoming_message(self, msg):
+        print("Incoming Block Received! \n")
         incoming_block = Block(msg['block'])
         if self.blockchain.process_block(incoming_block):
             delete_transactions = copy.deepcopy(incoming_block.transactions)
@@ -44,16 +45,16 @@ class Node:
         # reset mining process
 
 
-    def update_tx_queue(self, transactions: list):
-        # for each tx in transactions delete tx from self.transaction_queue
-        pass
 
-    def create_mining_message_thread(self):
-        while True:
-            new_block = self.mine_block()
+    def mining_message_thread(self):
+        while not self.stop_mine_function:
+            new_block_json = self.mine_block()
+            new_block = Block(new_block_json)
             if new_block:
-                self.send_block(new_block)
-                print("mined a new block!: \n", new_block)
+                if self.ledger.verify_and_add_transaction(new_block.transactions, new_block.index):
+                    self.blockchain.add_block(new_block)
+                    self.send_block(new_block_json)
+                    print("mined a new block!: \n", new_block)
             else:
                 self.reset_mine_function = False
                 continue
@@ -98,10 +99,6 @@ class Node:
 
 if __name__ == '__main__':
     n = Node('0')
-    # print(n.blockchain)
-    # new_json_block = n.mine_block()
-    # print(new_json_block)
-    # new_block = Block(new_json_block)
-    # print(new_block)
-    # n.blockchain.process_block(new_block)
-    # print(n.blockchain)
+    sleep(5)
+    n.stop_mine_function=True
+    print(n.blockchain)
