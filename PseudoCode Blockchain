@@ -114,11 +114,10 @@ GRADING
 2 - verifiers get reward for signing a block
 
 Part I:
-connect messenger
-write receive block method (need to write logic to reset mining when receive)
 test 4 instances local using SQS
 discover longest chain protocol
-delete transactions from pool once mined
+Document code
+write blockchain and ledger to disk
 
 Thread:
 while true:
