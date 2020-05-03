@@ -5,6 +5,24 @@ import datetime, hashlib, json
 
 
 class BlockChain:
+    """
+    A class used to hold and manipulate a blockchain. Initialized with an associated ledger. BlockChain contents are
+    stored to disk for node failure recovery.
+
+    Attributes
+    ----------
+    ledger : Ledger
+        asdf
+    blockchain: List
+        list of Block objects
+
+
+    Methods
+    -------
+    process_block(block: Block)
+        asdf
+
+    """
 
     def __init__(self, ledger):
         self.ledger = ledger
