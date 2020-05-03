@@ -112,3 +112,18 @@ GRADING
 2 - signed block does not exceed p for client
 2 - verifiers get reward for creating a block
 2 - verifiers get reward for signing a block
+
+Part I:
+connect messenger
+write receive block method (need to write logic to reset mining when receive)
+test 4 instances local using SQS
+discover longest chain protocol
+delete transactions from pool once mined
+
+Thread:
+while true:
+    new block = mine_block()
+    if new_block:
+        send new block
+    else:
+        continue

@@ -29,7 +29,7 @@ class BlockChain:
 
     def add_block(self, block):
         self.blockchain.insert(block.index, block)
-        pass
+        print('New block added to the block chain: \n', str(block))
 
     def get_last_block(self):
         return self.blockchain[-1]

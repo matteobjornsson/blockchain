@@ -8,18 +8,14 @@ message_queue_URLs = {
 	'1': 'https://sqs.us-east-1.amazonaws.com/622058021374/1.fifo',
 	'2': 'https://sqs.us-east-1.amazonaws.com/622058021374/2.fifo',
 	'3': 'https://sqs.us-east-1.amazonaws.com/622058021374/3.fifo',
-	'4': 'https://sqs.us-east-1.amazonaws.com/622058021374/4.fifo',
-	'leader': 'https://sqs.us-east-1.amazonaws.com/622058021374/leader.fifo',
-	'client-blue': 'https://sqs.us-east-1.amazonaws.com/622058021374/client-blue.fifo',
-	'client-red': 'https://sqs.us-east-1.amazonaws.com/622058021374/client-red.fifo'
 	}
 
 class Messenger:
 	"""
 	This class is a generic message handler for the RAFT system, using hardcoded
 	SQS queues to communicate with other nodes. The nodes accessible using this
-	class are  '0', '1', '2', '3', '4', 'leader', 'client-blue', and 'client-red'.
-	This class requires the handle_received_message(message) interface
+	class are  '0', '1', '2', '3'
+	This class requires the handle_incoming_message(message) interface
 
 	methods:
 		__init__(id, target) : constructor
