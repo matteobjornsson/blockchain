@@ -67,8 +67,10 @@ class Node:
         :param str node_id: one of '0', '1', '2', or '3', the possible nodes in network
         """
         self.node_id = node_id
+        #  TODO: check disk for existing ledger and blockchain. Only make new instance if not found.
         self.ledger = Ledger()
         self.blockchain = BlockChain(self.ledger)
+
         self.messenger = Messenger(self.node_id, self)
         self.peers = [peer for peer in ['0', '1', '2', '3'] if peer != self.node_id]
         self.transaction_queue = []

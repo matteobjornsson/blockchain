@@ -12,47 +12,85 @@ class BlockChain:
     Attributes
     ----------
     ledger : Ledger
-        asdf
+        a reference to the blockchain's associated ledger, created by Node.py
     blockchain: List
-        list of Block objects
+        list of Block objects constituting the blockchain
 
 
     Methods
     -------
     process_block(block: Block)
-        asdf
+        This method verifies the proof of work and transactions of a block and adds the block to the chain if valid.
+    add_block(block: Block)
+        Adds a block to the blockchain a its appropriate index
+    get_last_block()
+        Return last block in the chain.
 
     """
 
     def __init__(self, ledger):
+        """
+        Constructor initializes a BlockChain using a Genesis Block. Only used if no chain already on disk when Node.py
+        starts up.
+
+        :param ledger: Ledger. Reference to ledger passed to constructor for reference.
+        """
         self.ledger = ledger
-        self.blockchain = [Block(
-            prevHash='0000000000000000000000000000000000000000000000000000000000000000',
-            timestamp= str(datetime.datetime.now()),
-            nonce= 0,
-            transactions= [],
-            index= 0,
-            hash='00000000000000000000000000000000000000000000000000000000000fffff'
-        )]
-        #pickledump and jsondump the chain to disk
+        self.blockchain = [  # Genesis block! as the first block in the chain the hashes are predetermined.
+            Block(
+                prevHash='0000000000000000000000000000000000000000000000000000000000000000',
+                timestamp=str(datetime.datetime.now()),
+                nonce=0,
+                transactions=[],
+                index=0,
+                hash='000000000000000000000000000000000000000000000000000000000000000f'
+            )
+        ]
+        #  TODO: pickledump and jsondump the chain to disk
 
     def process_block(self, block) -> bool:
+        """
+        Method takes a block and verifies the PoW and transaction validity (which updates ledger if valid).
+        If valid add block to chain.
+
+        :param block: Block. Represents block object to be processed.
+        :return: bool. Return True if valid block and added to ledger and chain, return False otherwise.
+        """
         if block.verify_proof_of_work():
             print('proof of work check passed')
+            # if transactions are valid verify_and_add will update the ledger and return true
             if self.ledger.verify_and_add_transaction(block.transactions, block.index):
                 print('verify tx check passed')
+                #  add the block to the chain since PoW and tx are valid
                 self.add_block(block)
                 return True
         return False
 
     def add_block(self, block):
+        """
+        This method adds blocks to the chain and writes new chain to disk.
+
+        :param block: Block. Block to be added to chain. Block is assumed to have been verified already
+        :return: None
+        """
         self.blockchain.insert(block.index, block)
+        #  TODO: write new chain to disk
         print('New block added to the block chain: \n', str(block))
 
-    def get_last_block(self):
+    def get_last_block(self) -> Block:
+        """
+        Returns last block in the chain.
+
+        :return: Block.
+        """
         return self.blockchain[-1]
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """
+        Overrides native string representation of a BlockChain Object.
+
+        :return: str. String representation of the BlockChain
+        """
         blockchain_string = ''
         for block in self.blockchain:
             blockchain_string += '-'*75 + '\n'
