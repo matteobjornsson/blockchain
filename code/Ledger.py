@@ -30,24 +30,29 @@ class Ledger:
         """
         self.blockchain_balances = [{'node0': 10, 'node1': 10, 'node2': 10, 'node3': 10}]  # initial bc balance
 
-    def verify_and_add_transaction(self, transactions, index) -> bool:
+    def verify_transaction(self, transactions, index):
         """
         Takes transaction objects and applies them to the ledger at index. If any balance is negative return false.
 
         :param transactions: list. List of Transaction objects to verify
         :param index: int. index at which the transactions are applied (equal to block index)
-        :return: bool. Return false if transactions cause any balance to go negative.
+        :return: bool, list. Return True, [new balance dict] if all valid, otherwise return false, [bad transactions] if
+        transactions cause any balance to go negative.
         """
 
         change = self.blockchain_balances[index-1]  # get previous state
         for tx in transactions:  # apply all transactions to that state
             change[tx.from_node] -= tx.amount
             change[tx.to_node] += tx.amount
-        for v in change.values():
-            if v < 0:
-                return False
-        self.add_balance_state(change, index)  # apply that state if none are negative
-        return True
+        all_bad_tx = []
+        for node, balance in change.items():
+            if balance < 0:
+                all_bad_tx.extend([tx.unique_id for tx in transactions if tx.from_node == node])
+        if all_bad_tx:
+            return False, all_bad_tx
+        else:
+            return True, [change]
+
 
     def add_balance_state(self, balance, index):
         """
@@ -84,7 +89,7 @@ if __name__ == '__main__':
                     Transaction(_to='node3', _from='node2', amount=3.6)]
     nodes = ['node0', 'node1', 'node2', 'node3']
     L = Ledger()
-    L.verify_and_add_transaction(transactions, 1)
+    L.verify_transaction(transactions, 1)
     for node in nodes:
         print('Balance: ', node, ': ', L.get_curr_balance_for_node(node))
     print("total currency: ", L.get_total_currency_in_chain())

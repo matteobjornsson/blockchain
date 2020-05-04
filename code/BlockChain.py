@@ -59,7 +59,9 @@ class BlockChain:
         if block.verify_proof_of_work():
             print('proof of work check passed')
             # if transactions are valid verify_and_add will update the ledger and return true
-            if self.ledger.verify_and_add_transaction(block.transactions, block.index):
+            verified_bool, change = self.ledger.verify_transaction(block.transactions, block.index)
+            if verified_bool:
+                self.ledger.add_balance_state(change[0], block.index)  # apply that state if none are negative
                 print('verify tx check passed')
                 #  add the block to the chain since PoW and tx are valid
                 self.add_block(block)
