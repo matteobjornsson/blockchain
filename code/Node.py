@@ -67,8 +67,8 @@ class Node:
 
         self.node_id = node_id
         #  TODO: check disk for existing ledger and blockchain. Only make new instance if not found.
-        self.ledger = Ledger()
-        self.blockchain = BlockChain(self.ledger)
+        self.ledger = Ledger(node_id)
+        self.blockchain = BlockChain(self.node_id, self.ledger)
 
         self.messenger = Messenger(self.node_id, self)
         self.peers = [peer for peer in ['0', '1', '2', '3'] if peer != self.node_id]

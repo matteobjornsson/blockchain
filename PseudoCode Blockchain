@@ -115,8 +115,6 @@ GRADING
 
 Part I:
 write mechanisms for sending and receiving transactions
-
-need to validate transactions first before mining into block, otherwise entire block will become invalid from one tx
 test 4 instances local using SQS
 discover longest chain protocol
 write blockchain and ledger to disk

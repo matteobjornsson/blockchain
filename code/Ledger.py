@@ -1,4 +1,5 @@
 from Transaction import Transaction
+import pickle, os
 
 
 class Ledger:
@@ -22,13 +23,20 @@ class Ledger:
         Returns current balance of a given node (as defined in last entry in ledger)
     get_total_currency_in_chain()
         Returns sum of all member balances (represents coin in circulation)
+    create_or_read_file()
+        Check for existing Ledger on disk, else create Ledger
+    write_to_file()
+        dump ledger contents to pickle on disk
     """
 
-    def __init__(self):
+    def __init__(self, node_id):
         """
         Constructor for the Ledger. Initializes balance of genesis block to introduce init currency into blockchain.
         """
-        self.blockchain_balances = [{'node0': 10, 'node1': 10, 'node2': 10, 'node3': 10}]  # initial bc balance
+        self.node_id = node_id
+        self.pickle_path = '../files/ledger' + node_id + '.pickle'
+        self.blockchain_balances = [{}]  # initial bc balance
+        self.create_or_read_file()
 
     def verify_transaction(self, transactions, index):
         """
@@ -65,6 +73,7 @@ class Ledger:
             self.blockchain_balances.append(balance)
         else:
             self.blockchain_balances[index] = balance
+        self.write_to_disk()
 
     def get_curr_balance_for_node(self, node) -> float:
         """
@@ -85,13 +94,44 @@ class Ledger:
             _sum += v
         return _sum
 
+    def create_or_read_file(self):
+        """
+        Check for existing Ledger on disk, else create Ledger
+        :return: None
+        """
+        # make sure the 'files' directory exists
+        if not os.path.isdir('../files'):
+            os.mkdir('../files')
+        try:
+            # try to read in file from disk if it exists
+            read_file = open(self.pickle_path, 'rb')
+            self.blockchain_balances = pickle.load(read_file)
+            read_file.close()
+            print('Ledger loaded from file')
+        except FileNotFoundError:
+            # if no ledger exists, initialize one with the initial balances
+            self.blockchain_balances = [{'node0': 10, 'node1': 10, 'node2': 10, 'node3': 10}]
+            self.write_to_disk()
+
+    def write_to_disk(self):
+        """
+        dump ledger contents to pickle on disk
+        :return: None
+        """
+        # dump to pickle
+        pickle.dump(self.blockchain_balances, open(self.pickle_path, "wb"))
+
 
 if __name__ == '__main__':
-    transactions = [Transaction(_to='node1', _from='node2', amount=1.5),
-                    Transaction(_to='node3', _from='node2', amount=3.6)]
+    transactions = [Transaction(_to='node1', _from='node3', amount=1.1),
+                    Transaction(_to='node3', _from='node1', amount=0.5)]
     nodes = ['node0', 'node1', 'node2', 'node3']
-    L = Ledger()
-    L.verify_transaction(transactions, 1)
+    L = Ledger('0')
+    print(L.blockchain_balances)
+    verify_boolean, change = L.verify_transaction(transactions, 1)
+    if verify_boolean:
+        L.add_balance_state(change[0], 1)
     for node in nodes:
         print('Balance: ', node, ': ', L.get_curr_balance_for_node(node))
+    print(L.blockchain_balances)
     print("total currency: ", L.get_total_currency_in_chain())
