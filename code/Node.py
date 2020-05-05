@@ -128,7 +128,7 @@ class Node:
             if len(self.received_blocks) > 0:
                 self.process_incoming_block()
 
-            elif True:  # self.transaction_queue:  # check if tx queue is empty
+            elif self.transaction_queue:  # check if tx queue is empty
                 tx_to_mine = copy.deepcopy(self.transaction_queue)
                 next_index = self.blockchain.get_last_block().index + 1
 
@@ -154,7 +154,9 @@ class Node:
                 else:
                     #  if not valid, verified_bool returns False with list of bad transaction IDs. Delete bad tx
                     print('verification unsuccessful, returned following transactions ', return_value)
+                    print('txs after receiving block, before adjustment', self.transaction_queue)
                     self.transaction_queue = [tx for tx in self.transaction_queue if tx.unique_id not in return_value]
+                    print('txs after receiving block', self.transaction_queue)
             else:
                 sleep(.5)
 
@@ -194,7 +196,9 @@ class Node:
             new_block['hash'] = _hash
             new_block_json = json.dumps(new_block)
             # clear mined transactions from queue
+            print('txs ater mining before adjustment', self.transaction_queue)
             self.transaction_queue = [x for x in self.transaction_queue if x not in transactions]
+            print('txs ater mining', self.transaction_queue)
             return new_block_json  # this string will be sent to other nodes
         else:  # mine function interrupted, returning empty string.
             return _hash
@@ -217,27 +221,22 @@ if __name__ == '__main__':
     arg = sys.argv[1]
 
     n = Node(arg)
-    sleep(3+ 5*random.random())
+    sleep(2+ 4*random.random())
     n.handle_incoming_message(
         {'type': 'Transaction', 'contents': str(Transaction(_to='node1', _from='node3', amount=1))})
-    n.handle_incoming_message(
-        {'type': 'Transaction', 'contents': str(Transaction(_to='node3', _from='node1', amount=.9))})
     print('-----------------------------------------------------\n' * 3)
-    sleep(4 + 8*random.random())
+    sleep(2 + 4*random.random())
 
     n.handle_incoming_message(
         {'type': 'Transaction', 'contents': str(Transaction(_to='node3', _from='node1', amount=.22))})
-    n.handle_incoming_message(
-        {'type': 'Transaction', 'contents': str(Transaction(_to='node2', _from='node3', amount=.33))})
 
     print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&\n' * 3)
+    sleep(2 + 4 * random.random())
 
     n.stop_mine_function = True
     sleep(1)
     n.messenger.run = False
     n.mine_thread.join()
-
-
 
     print(f'NODE {arg:s}: \n', str(n.blockchain))
 
