@@ -66,8 +66,10 @@ class BlockChain:
                     print('verify tx check passed')
                     #  add the block to the chain since PoW and tx are valid
                     self.add_block(block)
+                    print("\nReceived Block added to Blockchain: \n", "Index: ", block.index, '\n', "Previous Hash: ",
+                          block.prevHash, '\n', "Hash: ", block.hash, '\n')
                     return True
-            return False
+        return False
         #elif
 
     def add_block(self, block):
@@ -82,7 +84,6 @@ class BlockChain:
         else:
             self.blockchain[block.index] = block
         #  TODO: write new chain to disk
-        print('New block added to the block chain: \n', str(block))
 
     def get_last_block(self) -> Block:
         """
