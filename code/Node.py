@@ -61,11 +61,12 @@ class Node:
 
         :param str node_id: one of '0', '1', '2', or '3', the possible nodes in network
         """
-        self.difficulty = 4
+        self.difficulty = 6
         _max = 'f' * 64
         self.hash_difficulty = _max.replace('f', '0', self.difficulty)
 
         self.node_id = node_id
+        self.file_path = '../files/blockchain' + node_id + '.txt'
         #  TODO: check disk for existing ledger and blockchain. Only make new instance if not found.
         self.ledger = Ledger(node_id)
         self.blockchain = BlockChain(self.node_id, self.ledger)
@@ -124,6 +125,7 @@ class Node:
 
         :return: None
         """
+        count = 0
         while not self.stop_mine_function:  # always run unless stop flag is true
             if len(self.received_blocks) > 0:
                 self.process_incoming_block()
@@ -158,7 +160,13 @@ class Node:
                     self.transaction_queue = [tx for tx in self.transaction_queue if tx.unique_id not in return_value]
                     print('txs after receiving block', self.transaction_queue)
             else:
-                sleep(.5)
+                pass
+            count += 1
+            if count > 500000:
+                text_file = open(self.file_path, "a")
+                text_file.write(str(self.transaction_queue))
+                text_file.close()
+                count = 0
 
     def hash_block(self, transactions, index) -> str:
         """
@@ -221,24 +229,18 @@ if __name__ == '__main__':
     arg = sys.argv[1]
 
     n = Node(arg)
-    sleep(2+ 4*random.random())
     n.handle_incoming_message(
         {'type': 'Transaction', 'contents': str(Transaction(_to='node1', _from='node3', amount=1))})
     print('-----------------------------------------------------\n' * 3)
-    sleep(2 + 4*random.random())
-
     n.handle_incoming_message(
         {'type': 'Transaction', 'contents': str(Transaction(_to='node3', _from='node1', amount=.22))})
 
     print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&\n' * 3)
-    sleep(2 + 4 * random.random())
 
-    n.stop_mine_function = True
-    sleep(1)
-    n.messenger.run = False
-    n.mine_thread.join()
 
-    print(f'NODE {arg:s}: \n', str(n.blockchain))
+    # n.stop_mine_function = True
+    # n.messenger.run = False
+    #
+    # n.mine_thread.join()
 
-    print('transaction list: ', n.transaction_queue)
-    print(enumerate())
+

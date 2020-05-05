@@ -53,7 +53,10 @@ class BlockChain:
         :param block: Block. Represents block object to be processed.
         :return: bool. Return True if valid block and added to ledger and chain, return False otherwise.
         """
+        # print('incoming block index: ', block.index, '\n index of last block in chain: ', self.get_last_block().index)
+        # print('incoming block prevHash: ', block.prevHash, '\nhash of last block in chain: ', self.get_last_block().hash)
         if block.index == self.get_last_block().index+1 and block.prevHash == self.get_last_block().hash:
+            # print('You have arrived!')
             if block.verify_proof_of_work():
                 print('proof of work check passed')
                 # if transactions are valid verify_and_add will update the ledger and return true

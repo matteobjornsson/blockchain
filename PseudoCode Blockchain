@@ -114,7 +114,7 @@ GRADING
 2 - verifiers get reward for signing a block
 
 Part I:
-write mechanisms for sending and receiving transactions
+Test everything properly
 test 4 instances local using SQS
 discover longest chain protocol
 
