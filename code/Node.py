@@ -6,7 +6,7 @@ from Block import Block
 from Messenger import Messenger
 from threading import Thread
 from time import sleep
-import datetime, json, hashlib, copy
+import datetime, json, hashlib, copy, collections
 
 
 class Node:
@@ -48,15 +48,15 @@ class Node:
         Starts the thread that continually mines new blocks to add to the chain.
     handle_incoming_message()
         interface required for the Messenger class, handles incoming messages from the Messenger class.
-    mining_message_thread()
+    mining_thread()
         continually mines new blocks on current blockchain, resets function when new block received
-    mine_block()
+    hash_block()
         the actual function that generates a hash for a new block to add to the blockchain
     send_block(block: str)
         sends newly mined blocks to all peers
 
     """
-    difficulty = 3
+    difficulty = 4
     max = 'f'*64
     hash_difficulty = max.replace('f', '0', difficulty)
     print('hash difficulty: ', hash_difficulty)
@@ -77,6 +77,7 @@ class Node:
         self.transaction_queue = []
         self.reset_mine_function = False
         self.stop_mine_function = False
+        self.received_blocks = collections.deque()  # d.append() to add, d.popleft() to remove as queue
         self.mine_thread = self.start_mining_thread()
 
     def start_mining_thread(self) -> Thread:
@@ -86,7 +87,7 @@ class Node:
         :return: mining thread
         """
         t = Thread(
-            target=self.mining_message_thread
+            target=self.mining_thread
         )
         t.start()
         return t
@@ -104,58 +105,66 @@ class Node:
         elif msg['type'] == 'Block':  # if block process and reset mine function if valid
             print("Incoming Block Received! \n")  # debugging print statement
             # Nodes must always mine on the longest chain, so any mining in progress needs to be reset
+            self.received_blocks.append(Block(msg['contents']))
             self.reset_mine_function = True
-            incoming_block = Block(msg['contents'])
-            # process block returns true if it is valid and added to blockchain and ledger
-            if self.blockchain.process_block(incoming_block):
-                # if the block is valid, then we need to remove all transactions from our own tx queue
-                delete_transactions = copy.deepcopy(incoming_block.transactions)
-                self.transaction_queue = [x for x in self.transaction_queue if x not in delete_transactions]
-                print('transactions after deletion ', self.transaction_queue)
 
+    def process_incoming_block(self):
+        incoming_block = self.received_blocks.popleft()
+        # process block returns true if it is valid and added to blockchain and ledger
+        if self.blockchain.verify_block(incoming_block):
+            # if the block is valid, then we need to remove all transactions from our own tx queue
+            delete_transactions = copy.deepcopy(incoming_block.transactions)
+            self.transaction_queue = [x for x in self.transaction_queue if x not in delete_transactions]
+            print('transactions after deletion ', self.transaction_queue)
 
-    def mining_message_thread(self):
+    def mining_thread(self):
         """
         Function to be threaded. Continually mines new blocks on current blockchain, watches for new blocks to mine on
 
         :return: None
         """
         while not self.stop_mine_function:  # always run unless stop flag is true
-            # Json string is what we will send to other nodes.
-            if True: # self.transaction_queue:  # check if tx queue is empty
-                # mine_block() returns empty ('false') string if mining was interrupted by discovery of new block
-                new_block_json = self.mine_block()
-                if new_block_json:  # i.e if we mined a block uninterrupted
-                    new_block = Block(new_block_json)  # Block object is what we will add to own blockchain
-                    #  if valid, verified_bool returns True, with new balance
-                    #  if not valid, verified_bool returns False with list of bad transaction IDs
-                    verified_bool, return_value = self.ledger.verify_transaction(new_block.transactions, new_block.index)
-                    print('verified transaction , returned ', str(verified_bool))
-                    if verified_bool:
-                        print('verification successful change of ', return_value)
+            if len(self.received_blocks) > 0:
+                self.process_incoming_block()
+
+            elif True: # self.transaction_queue:  # check if tx queue is empty
+                tx_to_mine = copy.deepcopy(self.transaction_queue)
+                next_index = self.blockchain.get_last_block().index + 1
+
+                verified_bool, return_value = self.ledger.verify_transaction(tx_to_mine, next_index)
+                print('verified transaction , returned ', str(verified_bool))
+                if verified_bool:
+                    # verified_bool returns True with new balance
+                    print('verification successful change of ', return_value)
+                    new_block_json = self.hash_block(tx_to_mine, next_index)
+                    # hash_block() returns empty ('false') string if mining was interrupted by discovery of new block
+                    if new_block_json: # mining was not interrupted
+                        new_block = Block(new_block_json)
                         self.ledger.add_balance_state(return_value[0], new_block.index)
                         self.blockchain.add_block(new_block)
                         self.send_msg(new_block_json, 'Block')
                         print("mined a new block!: \n", new_block)
-                else:  # this will only occur if mining had been interrupted, so we need to reset flag and start again
+                    else:
+                        # this will only occur if mining had been interrupted, so we need to reset flag and start again
+                        self.reset_mine_function = False
+                        continue
+                else:
+                    #  if not valid, verified_bool returns False with list of bad transaction IDs. Delete bad tx
                     print('verification unsuccessful, returned following transactions ', return_value)
                     self.transaction_queue = [tx for tx in self.transaction_queue if tx.unique_id not in return_value]
-                    self.reset_mine_function = False
-                    continue
             else:
                 sleep(.5)
 
-    def mine_block(self) -> str:
+    def hash_block(self, transactions, index) -> str:
         """
         the actual function that generates a hash for a new block to add to the blockchain
 
         :return: str. Returns empty string if interrupted, otherwise JSON string representation of a newly mined block
         """
         last_block = self.blockchain.get_last_block()
-        transactions = copy.deepcopy(self.transaction_queue)
         #  make a new block with everything but the hash
         new_block = {
-            'index': last_block.index + 1,
+            'index': index,
             'prevHash': last_block.hash,
             'timestamp': str(datetime.datetime.now()),
             'nonce': 0,
@@ -172,7 +181,7 @@ class Node:
             if not self.reset_mine_function:  # keep hashing unless a new block was received
                 new_block['nonce'] += 1
                 _hash = hashlib.sha256(json.dumps(new_block).encode()).hexdigest()
-                print(_hash)
+                #print(_hash)
             else:  # if a new block was received, break and exit the function, returning an empty string (falsy)
                 _hash = ''
                 break
@@ -201,32 +210,24 @@ class Node:
             self.messenger.send(msg_dict, peer)
 
 if __name__ == '__main__':
-    new_block = {
-        'index': 1,
-        'prevHash':'00000000000000000000000000000000000000000000000000000000000fffff',
-        'timestamp' : str(datetime.datetime.now()),
-        'nonce': 5,
-        'transactions': [Transaction(_to='node1', _from='node2', amount=3.4),
-                         Transaction(_to='node3', _from='node2', amount=2.1)]
 
-    }
-    new_block['transactions'] = [str(tx) for tx in new_block['transactions']]
-    _hash = hashlib.sha256(json.dumps(new_block).encode()).hexdigest()
-    new_block['hash'] = _hash
-    new_block_json = json.dumps(new_block)
 
 
 
     n = Node('0')
+    n2 = Node('1')
     sleep(3)
     print('****************************************************\n'*3)
     n.handle_incoming_message({'type': 'Transaction', 'contents': str(Transaction(_to='node1', _from='node3', amount=1))})
     n.handle_incoming_message({'type': 'Transaction', 'contents': str(Transaction(_to='node3', _from='node1', amount=.9))})
     print('-----------------------------------------------------\n'*3)
     sleep(3)
-    #  n.handle_incoming_message({'type' : 'Block', 'contents' : new_block_json})
+
     print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&\n'*3)
     # sleep(3)
     n.stop_mine_function=True
-    print(n.blockchain)
+    n2.stop_mine_function=True
+    print('NODE 0: \n', str(n.blockchain))
+    print('NODE 1: \n', str(n2.blockchain))
+
     print('transaction list: ', n.transaction_queue)

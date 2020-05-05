@@ -19,7 +19,7 @@ class BlockChain:
 
     Methods
     -------
-    process_block(block: Block)
+    verify_block(block: Block)
         This method verifies the proof of work and transactions of a block and adds the block to the chain if valid.
     add_block(block: Block)
         Adds a block to the blockchain a its appropriate index
@@ -48,7 +48,7 @@ class BlockChain:
         ]
         #  TODO: pickledump and jsondump the chain to disk
 
-    def process_block(self, block) -> bool:
+    def verify_block(self, block) -> bool:
         """
         Method takes a block and verifies the PoW and transaction validity (which updates ledger if valid).
         If valid add block to chain.
@@ -56,17 +56,19 @@ class BlockChain:
         :param block: Block. Represents block object to be processed.
         :return: bool. Return True if valid block and added to ledger and chain, return False otherwise.
         """
-        if block.verify_proof_of_work():
-            print('proof of work check passed')
-            # if transactions are valid verify_and_add will update the ledger and return true
-            verified_bool, change = self.ledger.verify_transaction(block.transactions, block.index)
-            if verified_bool:
-                self.ledger.add_balance_state(change[0], block.index)  # apply that state if none are negative
-                print('verify tx check passed')
-                #  add the block to the chain since PoW and tx are valid
-                self.add_block(block)
-                return True
-        return False
+        if block.index == self.get_last_block().index+1 and block.prevHash == self.get_last_block().hash:
+            if block.verify_proof_of_work():
+                print('proof of work check passed')
+                # if transactions are valid verify_and_add will update the ledger and return true
+                verified_bool, change = self.ledger.verify_transaction(block.transactions, block.index)
+                if verified_bool:
+                    self.ledger.add_balance_state(change[0], block.index)  # apply that state if none are negative
+                    print('verify tx check passed')
+                    #  add the block to the chain since PoW and tx are valid
+                    self.add_block(block)
+                    return True
+            return False
+        #elif
 
     def add_block(self, block):
         """
@@ -75,7 +77,10 @@ class BlockChain:
         :param block: Block. Block to be added to chain. Block is assumed to have been verified already
         :return: None
         """
-        self.blockchain.insert(block.index, block)
+        if block.index >= len(self.blockchain):
+            self.blockchain.append(block)
+        else:
+            self.blockchain[block.index] = block
         #  TODO: write new chain to disk
         print('New block added to the block chain: \n', str(block))
 
@@ -125,7 +130,7 @@ if __name__ == '__main__':
     new_block_json = json.dumps(new_block)
     b = Block(json_string = new_block_json)
 
-    if bc.process_block(b):
+    if bc.verify_block(b):
         print("\n blockchain: \n", bc)
         print("ledger: \n", bc.ledger.blockchain_balances)
 

@@ -53,7 +53,6 @@ class Ledger:
         else:
             return True, [change]
 
-
     def add_balance_state(self, balance, index):
         """
         Adds a ledger state (in form of dictionary of peers and balances) to the ledger list at index.
@@ -62,7 +61,10 @@ class Ledger:
         :param index: int.
         :return: None
         """
-        self.blockchain_balances.insert(index, balance)
+        if index >= len(self.blockchain_balances):
+            self.blockchain_balances.append(balance)
+        else:
+            self.blockchain_balances[index] = balance
 
     def get_curr_balance_for_node(self, node) -> float:
         """
