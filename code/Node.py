@@ -4,9 +4,9 @@ from Ledger import Ledger
 from BlockChain import BlockChain
 from Block import Block
 from Messenger import Messenger
-from threading import Thread
+from threading import Thread, enumerate
 from time import sleep
-import datetime, json, hashlib, copy, collections
+import datetime, json, hashlib, copy, collections, sys, random
 
 
 class Node:
@@ -19,8 +19,6 @@ class Node:
     ----------
     difficulty : int
         indicates hash difficulty for mining blocks, integer represents number of leading 0s required
-    max : str
-        reference for maximum possible hash value
     hash_difficulty : str
         reference for hash difficulty as represented by a 64 char hexadecimal hash
     node_id : str
@@ -56,10 +54,6 @@ class Node:
         sends newly mined blocks to all peers
 
     """
-    difficulty = 4
-    max = 'f'*64
-    hash_difficulty = max.replace('f', '0', difficulty)
-    print('hash difficulty: ', hash_difficulty)
 
     def __init__(self, node_id: str):
         """
@@ -67,6 +61,10 @@ class Node:
 
         :param str node_id: one of '0', '1', '2', or '3', the possible nodes in network
         """
+        self.difficulty = 4
+        _max = 'f' * 64
+        self.hash_difficulty = _max.replace('f', '0', self.difficulty)
+
         self.node_id = node_id
         #  TODO: check disk for existing ledger and blockchain. Only make new instance if not found.
         self.ledger = Ledger()
@@ -87,7 +85,8 @@ class Node:
         :return: mining thread
         """
         t = Thread(
-            target=self.mining_thread
+            target=self.mining_thread,
+            name=('Mining Threads' + self.node_id)
         )
         t.start()
         return t
@@ -103,9 +102,11 @@ class Node:
             self.transaction_queue.append(Transaction(msg['contents']))
 
         elif msg['type'] == 'Block':  # if block process and reset mine function if valid
-            print("Incoming Block Received! \n")  # debugging print statement
+            incoming_block = Block(msg['contents'])
+            print("\nIncoming Block received: \n", "Index: ", incoming_block.index, '\n', "Previous Hash: ",
+                  incoming_block.prevHash, '\n', "Hash: ", incoming_block.hash, '\n')
             # Nodes must always mine on the longest chain, so any mining in progress needs to be reset
-            self.received_blocks.append(Block(msg['contents']))
+            self.received_blocks.append(incoming_block)
             self.reset_mine_function = True
 
     def process_incoming_block(self):
@@ -127,7 +128,7 @@ class Node:
             if len(self.received_blocks) > 0:
                 self.process_incoming_block()
 
-            elif True: # self.transaction_queue:  # check if tx queue is empty
+            elif True:  # self.transaction_queue:  # check if tx queue is empty
                 tx_to_mine = copy.deepcopy(self.transaction_queue)
                 next_index = self.blockchain.get_last_block().index + 1
 
@@ -138,12 +139,14 @@ class Node:
                     print('verification successful change of ', return_value)
                     new_block_json = self.hash_block(tx_to_mine, next_index)
                     # hash_block() returns empty ('false') string if mining was interrupted by discovery of new block
-                    if new_block_json: # mining was not interrupted
+                    if new_block_json:  # mining was not interrupted
                         new_block = Block(new_block_json)
                         self.ledger.add_balance_state(return_value[0], new_block.index)
                         self.blockchain.add_block(new_block)
                         self.send_msg(new_block_json, 'Block')
-                        print("mined a new block!: \n", new_block)
+                        print("\nmined a new block and added to blockchain!: \n", "Index: ", new_block.index, '\n',
+                              "Previous Hash: ",
+                              new_block.prevHash, '\n', "Hash: ", new_block.hash, '\n')
                     else:
                         # this will only occur if mining had been interrupted, so we need to reset flag and start again
                         self.reset_mine_function = False
@@ -181,19 +184,19 @@ class Node:
             if not self.reset_mine_function:  # keep hashing unless a new block was received
                 new_block['nonce'] += 1
                 _hash = hashlib.sha256(json.dumps(new_block).encode()).hexdigest()
-                #print(_hash)
+                # print(_hash)
             else:  # if a new block was received, break and exit the function, returning an empty string (falsy)
                 _hash = ''
                 break
 
-        if _hash: # finished mine function uninterrupted, successfully mined new block
+        if _hash:  # finished mine function uninterrupted, successfully mined new block
             print('found correct hash')
             new_block['hash'] = _hash
             new_block_json = json.dumps(new_block)
             # clear mined transactions from queue
             self.transaction_queue = [x for x in self.transaction_queue if x not in transactions]
             return new_block_json  # this string will be sent to other nodes
-        else: # mine function interrupted, returning empty string.
+        else:  # mine function interrupted, returning empty string.
             return _hash
 
     def send_msg(self, contents: str, type: str):
@@ -209,25 +212,34 @@ class Node:
         for peer in self.peers:
             self.messenger.send(msg_dict, peer)
 
+
 if __name__ == '__main__':
+    arg = sys.argv[1]
+
+    n = Node(arg)
+    sleep(3+ 5*random.random())
+    n.handle_incoming_message(
+        {'type': 'Transaction', 'contents': str(Transaction(_to='node1', _from='node3', amount=1))})
+    n.handle_incoming_message(
+        {'type': 'Transaction', 'contents': str(Transaction(_to='node3', _from='node1', amount=.9))})
+    print('-----------------------------------------------------\n' * 3)
+    sleep(4 + 8*random.random())
+
+    n.handle_incoming_message(
+        {'type': 'Transaction', 'contents': str(Transaction(_to='node3', _from='node1', amount=.22))})
+    n.handle_incoming_message(
+        {'type': 'Transaction', 'contents': str(Transaction(_to='node2', _from='node3', amount=.33))})
+
+    print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&\n' * 3)
+
+    n.stop_mine_function = True
+    sleep(1)
+    n.messenger.run = False
+    n.mine_thread.join()
 
 
 
-
-    n = Node('0')
-    n2 = Node('1')
-    sleep(3)
-    print('****************************************************\n'*3)
-    n.handle_incoming_message({'type': 'Transaction', 'contents': str(Transaction(_to='node1', _from='node3', amount=1))})
-    n.handle_incoming_message({'type': 'Transaction', 'contents': str(Transaction(_to='node3', _from='node1', amount=.9))})
-    print('-----------------------------------------------------\n'*3)
-    sleep(3)
-
-    print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&\n'*3)
-    # sleep(3)
-    n.stop_mine_function=True
-    n2.stop_mine_function=True
-    print('NODE 0: \n', str(n.blockchain))
-    print('NODE 1: \n', str(n2.blockchain))
+    print(f'NODE {arg:s}: \n', str(n.blockchain))
 
     print('transaction list: ', n.transaction_queue)
+    print(enumerate())
