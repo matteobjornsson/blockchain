@@ -61,7 +61,7 @@ class Node:
 
         :param str node_id: one of '0', '1', '2', or '3', the possible nodes in network
         """
-        self.difficulty = 6
+        self.difficulty = 4
         _max = 'f' * 64
         self.hash_difficulty = _max.replace('f', '0', self.difficulty)
 
