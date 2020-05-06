@@ -195,9 +195,12 @@ class Node:
         _hash = hashlib.sha256(json.dumps(new_block).encode()).hexdigest()
 
         # keep hashing the block until the hash meets the required difficulty
+        count = 0
         while _hash > self.hash_difficulty:
+            count +=1
             if not self.reset_mine_function:  # keep hashing unless a new block was received
-                print('still mining')
+                if count > 500000:
+                    print('still mining')
                 new_block['nonce'] += 1
                 _hash = hashlib.sha256(json.dumps(new_block).encode()).hexdigest()
                 # print(_hash)
