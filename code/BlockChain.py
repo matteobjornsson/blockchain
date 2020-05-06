@@ -41,6 +41,7 @@ class BlockChain:
         self.file_path = filename + '.txt'
         self.pickle_path = filename + '.pickle'
         self.blockchain = []
+        self.saved_blocks = []
         self.create_or_read_file()
 
         #  TODO: pickledump and jsondump the chain to disk
@@ -69,6 +70,8 @@ class BlockChain:
                     print("\nReceived Block added to Blockchain: \n", "Index: ", block.index, '\n', "Previous Hash: ",
                           block.prevHash, '\n', "Hash: ", block.hash, '\n')
                     return True
+        # elif index already exists, add to saved blocks
+        # elif index
         return False
         #elif
 

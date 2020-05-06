@@ -116,7 +116,19 @@ GRADING
 Part I:
 Test everything properly
 test 4 instances local using SQS
-discover longest chain protocol
+
+discover longest chain protocol:
+receive block:
+    if index already exists:
+        save block in ''saved blocks''
+        keep existing chain
+    else if index >> than current index:
+        loop through ''saved blocks'' until there is no more block with prevHash and add to saved chain stack (to replace)
+        -> block(prevHash) -> last block current node needs to keep in own chain
+        Replace current chain from block(prevHash) on with saved chain by popping from stack (add replaced blocks to ""saved blocks"")
+        #and verifying as saved chain is processed
+        # if verification fails, revert to old chain
+
 
 Thread:
 while true:

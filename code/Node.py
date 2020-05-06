@@ -143,12 +143,16 @@ class Node:
                     # hash_block() returns empty ('false') string if mining was interrupted by discovery of new block
                     if new_block_json:  # mining was not interrupted
                         new_block = Block(new_block_json)
-                        self.ledger.add_balance_state(return_value[0], new_block.index)
-                        self.blockchain.add_block(new_block)
-                        self.send_msg(new_block_json, 'Block')
-                        print("\nmined a new block and added to blockchain!: \n", "Index: ", new_block.index, '\n',
-                              "Previous Hash: ",
-                              new_block.prevHash, '\n', "Hash: ", new_block.hash, '\n')
+                        # last check before adding to blockchain that mined block is indeed the longest:
+                        if self.blockchain.get_last_block().index >= new_block.index:
+                            print('block already exists at that index! discarding mined block')
+                        else:
+                            self.ledger.add_balance_state(return_value[0], new_block.index)
+                            self.blockchain.add_block(new_block)
+                            self.send_msg(new_block_json, 'Block')
+                            print("\nmined a new block and added to blockchain!: \n", "Index: ", new_block.index, '\n',
+                                  "Previous Hash: ",
+                                  new_block.prevHash, '\n', "Hash: ", new_block.hash, '\n')
                     else:
                         # this will only occur if mining had been interrupted, so we need to reset flag and start again
                         self.reset_mine_function = False
