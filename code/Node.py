@@ -109,6 +109,7 @@ class Node:
             # Nodes must always mine on the longest chain, so any mining in progress needs to be reset
             self.received_blocks.append(incoming_block)
             self.reset_mine_function = True
+            print('reset mining true')
 
     def process_incoming_block(self):
         incoming_block = self.received_blocks.popleft()
@@ -196,10 +197,12 @@ class Node:
         # keep hashing the block until the hash meets the required difficulty
         while _hash > self.hash_difficulty:
             if not self.reset_mine_function:  # keep hashing unless a new block was received
+                print('still mining')
                 new_block['nonce'] += 1
                 _hash = hashlib.sha256(json.dumps(new_block).encode()).hexdigest()
                 # print(_hash)
             else:  # if a new block was received, break and exit the function, returning an empty string (falsy)
+                print('mining shouldve been reset, entered break of while loop')
                 _hash = ''
                 break
 
