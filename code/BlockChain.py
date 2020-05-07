@@ -56,18 +56,19 @@ class BlockChain:
         """
         if block.index < len(self.blockchain):
             self.saved_blocks.append(block)
+            print("incoming block index less than last +1, added to saved blocks")
             return False
         # print('incoming block index: ', block.index, '\n index of last block in chain: ', self.get_last_block().index)
         # print('incoming block prevHash: ', block.prevHash, '\nhash of last block in chain: ', self.get_last_block().hash)
         elif block.index == len(self.blockchain) and block.prevHash == self.get_last_block().hash:
-            print('Incoming block matches index and hash requirements')
+            #print('Incoming block matches index and hash requirements')
             if block.verify_proof_of_work():
-                print('proof of work check passed')
+                #print('proof of work check passed')
                 # if transactions are valid verify_and_add will update the ledger and return true
                 verified_bool, change = self.ledger.verify_transaction(block.transactions, block.index)
                 if verified_bool:
                     self.ledger.add_balance_state(change[0], block.index)  # apply that state if none are negative
-                    print('verify tx check passed')
+                    #print('verify tx check passed')
                     #  add the block to the chain since PoW and tx are valid
                     self.add_block(block)
                     print("\nReceived Block added to Blockchain: \n", "Index: ", block.index, '\n', "Previous Hash: ",
@@ -80,9 +81,14 @@ class BlockChain:
             return False
         elif block.index == len(self.blockchain) and block.prevHash != self.get_last_block().hash:
             self.saved_blocks.append(block)
+            print("incoming block has appropriate index but not correct prev hash, added to saved blocks")
             return False
         elif block.index > len(self.blockchain):
             self.rebuild_longest_chain(block)
+            print('********************************\n**************************\n\n NEW LONGEST CHAIN \n\n')
+            print('********************************\n**************************\n\n')
+            return False
+        return False
 
     def rebuild_longest_chain(self, block):
         current_block = block
@@ -93,13 +99,16 @@ class BlockChain:
         while build_new_chain:
             prev_block = self.find_block_from_hash(current_block.prevHash, self.saved_blocks)
             if prev_block:
+                print('found previous block: ', prev_block[0].index, prev_block[0].hash)
                 new_chain_stack.append(prev_block[0])
                 current_block = prev_block[0]
             else:
+                print('no more previous blocks found')
                 build_new_chain = False
 
         while len(new_chain_stack) > 0:
             next_block = new_chain_stack.pop()
+            print('block being replaced: ', next_block.index, next_block.hash)
             self.add_block(next_block)
             self.ledger.add_transactions(next_block.transactions, next_block.index)
             # NEW LONGEST CHAIN!
@@ -170,7 +179,7 @@ class BlockChain:
             read_file = open(self.pickle_path, 'rb')
             self.blockchain = pickle.load(read_file)
             read_file.close()
-            print('blockchain loaded from file')
+            # print('blockchain loaded from file')
         except FileNotFoundError:
             # if no blockchain exists, initialize one with the genesis block
             self.blockchain = [  # Genesis block! as the first block in the chain the hashes are predetermined.

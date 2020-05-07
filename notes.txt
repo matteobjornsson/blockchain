@@ -1,0 +1,51 @@
+Incoming Block received:
+ Index:  7
+ Previous Hash:  0000980751823eedf16bb8960aa34dbd4f46b2457d7fccf24ab24b88bd087554
+ Hash:  000036487513a799dfe3baa38414747ef81f7547fb14704645250a4aaa021102
+
+reset mining true
+
+Received Block added to Blockchain:
+ Index:  7
+ Previous Hash:  0000980751823eedf16bb8960aa34dbd4f46b2457d7fccf24ab24b88bd087554
+ Hash:  000036487513a799dfe3baa38414747ef81f7547fb14704645250a4aaa021102
+
+
+Incoming Block received:
+ Index:  8
+ Previous Hash:  000036487513a799dfe3baa38414747ef81f7547fb14704645250a4aaa021102
+ Hash:  00005738a51d947461509211b1b00501cc6e9c7c45eb8a9f2dc124810bb41e15
+
+reset mining true
+verify tx not passed
+Index =  8
+Hash =  00005738a51d947461509211b1b00501cc6e9c7c45eb8a9f2dc124810bb41e15
+
+
+Incoming Block received:
+ Index:  9
+ Previous Hash:  00005738a51d947461509211b1b00501cc6e9c7c45eb8a9f2dc124810bb41e15
+ Hash:  0000dd8467d88a356b7be8ccc7698fdc090dd9218714ab65ec1451981b48f3c0
+
+reset mining true
+no more previous blocks found
+block being replaced:  9 0000dd8467d88a356b7be8ccc7698fdc090dd9218714ab65ec1451981b48f3c0
+Exception in thread Mining Threads1:
+Traceback (most recent call last):
+  File "/usr/lib/python3.6/threading.py", line 916, in _bootstrap_inner
+    self.run()
+  File "/usr/lib/python3.6/threading.py", line 864, in run
+    self._target(*self._args, **self._kwargs)
+  File "Node.py", line 133, in mining_thread
+    self.process_incoming_block()
+  File "Node.py", line 118, in process_incoming_block
+    if self.blockchain.verify_block(incoming_block):
+  File "/home/matteo/repos/blockchain/code/BlockChain.py", line 87, in verify_block
+    self.rebuild_longest_chain(block)
+  File "/home/matteo/repos/blockchain/code/BlockChain.py", line 113, in rebuild_longest_chain
+    self.ledger.add_transactions(next_block.transactions, next_block.index)
+  File "/home/matteo/repos/blockchain/code/Ledger.py", line 86, in add_transactions
+    change = self.blockchain_balances[index - 1]  # get previous state
+IndexError: list index out of range
+
+

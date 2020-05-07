@@ -61,5 +61,10 @@ if __name__ == '__main__':
         tx = txg.make_tx()
         msg_dict = {'contents': str(tx), 'type': 'Transaction'}
         for node in txg.nodes:
-            txg.send(msg_dict, node)
-        sleep(5)
+            not_this_node = txg.nodes[random.randrange(4)]
+            if node == not_this_node:
+                continue
+            else:
+                sleep(random.uniform(0.1, 1))
+                txg.send(msg_dict, node)
+        sleep(3)
