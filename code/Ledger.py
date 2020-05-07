@@ -75,6 +75,20 @@ class Ledger:
             self.blockchain_balances[index] = balance
         self.write_to_disk()
 
+    def add_transactions(self, transactions: list, index):
+        """
+        Add transactions directly to Ledger without verifying them (assumed valid)
+
+        :param transactions: list. list of transaction objects
+        :param index: int. index at which tx are applied
+        :return: None
+        """
+        change = self.blockchain_balances[index - 1]  # get previous state
+        for tx in transactions:  # apply all transactions to that state
+            change[tx.from_node] -= tx.amount
+            change[tx.to_node] += tx.amount
+        self.add_balance_state(change, index)
+
     def get_curr_balance_for_node(self, node) -> float:
         """
         Returns current balance of a given node (as defined in last entry in ledger)

@@ -1,7 +1,7 @@
 from Block import Block
 from Transaction import Transaction
 from Ledger import Ledger
-import datetime, hashlib, json, os, csv, pickle
+import datetime, hashlib, json, os, pickle, collections
 
 
 class BlockChain:
@@ -54,9 +54,12 @@ class BlockChain:
         :param block: Block. Represents block object to be processed.
         :return: bool. Return True if valid block and added to ledger and chain, return False otherwise.
         """
-        print('incoming block index: ', block.index, '\n index of last block in chain: ', self.get_last_block().index)
-        print('incoming block prevHash: ', block.prevHash, '\nhash of last block in chain: ', self.get_last_block().hash)
-        if block.index == self.get_last_block().index+1 and block.prevHash == self.get_last_block().hash:
+        if block.index < len(self.blockchain):
+            self.saved_blocks.append(block)
+            return False
+        # print('incoming block index: ', block.index, '\n index of last block in chain: ', self.get_last_block().index)
+        # print('incoming block prevHash: ', block.prevHash, '\nhash of last block in chain: ', self.get_last_block().hash)
+        elif block.index == len(self.blockchain) and block.prevHash == self.get_last_block().hash:
             print('Incoming block matches index and hash requirements')
             if block.verify_proof_of_work():
                 print('proof of work check passed')
@@ -74,12 +77,45 @@ class BlockChain:
                     print('verify tx not passed\nIndex = ', block.index, '\nHash = ', block.hash, '\n')
             else:
                 print('proof of work check not passed\nIndex = ', block.index, '\nHash = ', block.hash, '\n')
-        # elif index already exists, add to saved blocks
-        # elif index
-        else:
-            print('index and prev hash requirements not passed\nIndex = ', block.index, '\nHash = ', block.hash, '\n')
-        return False
-        #elif
+            return False
+        elif block.index == len(self.blockchain) and block.prevHash != self.get_last_block().hash:
+            self.saved_blocks.append(block)
+            return False
+        elif block.index > len(self.blockchain):
+            self.rebuild_longest_chain(block)
+
+    def rebuild_longest_chain(self, block):
+        current_block = block
+        build_new_chain = True
+        new_chain_stack = collections.deque()
+        new_chain_stack.append(current_block)
+
+        while build_new_chain:
+            prev_block = self.find_block_from_hash(current_block.prevHash, self.saved_blocks)
+            if prev_block:
+                new_chain_stack.append(prev_block[0])
+                current_block = prev_block[0]
+            else:
+                build_new_chain = False
+
+        while len(new_chain_stack) > 0:
+            next_block = new_chain_stack.pop()
+            self.add_block(next_block)
+            self.ledger.add_transactions(next_block.transactions, next_block.index)
+            # NEW LONGEST CHAIN!
+
+    # if index already exists:
+    #     save block in ''saved blocks''
+    #     keep existing chain
+    # else if index >> than current index:
+    #     loop through ''saved blocks'' until there is no more block with prevHash and add to saved chain stack (to replace)
+    #     -> block(prevHash) -> last block current node needs to keep in own chain
+    #     Replace current chain from block(prevHash) on with saved chain by popping from stack (add replaced blocks to ""saved blocks"")
+    #     #and verifying as saved chain is processed
+    #     # if verification fails, revert to old chain
+
+    def find_block_from_hash(self, _hash, list_of_blocks):
+        return [block for block in list_of_blocks if block.hash == _hash]
 
     def add_block(self, block):
         """
