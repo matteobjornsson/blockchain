@@ -34,6 +34,7 @@ class Ledger:
         Constructor for the Ledger. Initializes balance of genesis block to introduce init currency into blockchain.
         """
         self.node_id = node_id
+        self.file_path = '../files/ledger' + node_id + '.txt'
         self.pickle_path = '../files/ledger' + node_id + '.pickle'
         self.blockchain_balances = [{}]  # initial bc balance
         self.create_or_read_file()
@@ -133,6 +134,14 @@ class Ledger:
         :return: None
         """
         # dump to pickle
+        ledger_string = 'Ledger: \n'
+        for entry in self.blockchain_balances:
+            ledger_string += str(entry) + '\n'
+
+        text_file = open(self.file_path, "w")
+        text_file.write(ledger_string)
+        text_file.close()
+
         pickle.dump(self.blockchain_balances, open(self.pickle_path, "wb"))
 
 
