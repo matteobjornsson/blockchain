@@ -69,6 +69,15 @@ class Block:
         blockDict['transactions'] = [str(tx) for tx in blockDict['transactions']]
         return json.dumps(blockDict)
 
+    def __eq__(self, _in) -> bool:
+        """
+        Override of the equality attribute. Blocks are the same if their hashes are equivalent.
+
+        :param _in: str. Transaction to compare with self.
+        :return: bool.
+        """
+        return _in.hash == self.hash
+
     def verify_proof_of_work(self) -> bool:
         """
         This method verifies the hash matches the JSON equivalent of the block contents (sans hash)

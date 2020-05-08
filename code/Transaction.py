@@ -80,7 +80,7 @@ class Transaction:
         """
         return json.dumps(self.__dict__)
 
-    def __equals__(self, _in) -> bool:
+    def __eq__(self, _in) -> bool:
         """
         Override of the equality attribute. Transactions are the same if their unique IDs are equivalent.
 

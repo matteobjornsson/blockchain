@@ -114,13 +114,22 @@ GRADING
 2 - verifiers get reward for signing a block
 
 Part I:
-write mechanisms for sending and receiving transactions
-    (will need to differentiate between block msg and transaction msg)
-need to validate transactions first before mining into block, otherwise entire block will become invalid from one tx
+Test everything properly
+TODO: get ledger to update correctly
 test 4 instances local using SQS
-discover longest chain protocol
-Document code
-write blockchain and ledger to disk
+
+discover longest chain protocol:
+receive block:
+    if index already exists:
+        save block in ''saved blocks''
+        keep existing chain
+    else if index >> than current index:
+        loop through ''saved blocks'' until there is no more block with prevHash and add to saved chain stack (to replace)
+        -> block(prevHash) -> last block current node needs to keep in own chain
+        Replace current chain from block(prevHash) on with saved chain by popping from stack (add replaced blocks to ""saved blocks"")
+        #and verifying as saved chain is processed
+        # if verification fails, revert to old chain
+
 
 Thread:
 while true:

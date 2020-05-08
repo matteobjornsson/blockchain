@@ -26,12 +26,12 @@ class Messenger:
 	"""
 
 	def __init__(self, id: str, target, run: bool=True):
-		'''
+		"""
 		Messenger constructor. Takes id from list
 		'0', '1', '2', '3', '4', 'leader', 'client-blue', 'client-red'.
 		Constructor must be passed a reference to the class that is using it.
 		That class must implement handle_incoming_message(message: dict)
-		'''
+		"""
 		self.id = id #id of self in system
 		self.run = run
 		self.sqs = boto3.client('sqs') # make a new SQS object
@@ -42,9 +42,8 @@ class Messenger:
 		self.incoming_message_thread = self.start_incoming_message_thread()
 		self.msg_count = 0
 
-
 	def start_incoming_message_thread(self):
-		'''this method threads @listen_for_messages()'''
+		"""this method threads @listen_for_messages()"""
 		t = Thread(
 			target=self.listen_for_messages,
 			name=('Incoming Message Thread'+self.id),
