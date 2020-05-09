@@ -67,7 +67,6 @@ class Node:
 
         self.node_id = node_id
         self.file_path = '../files/blockchain' + node_id + '.txt'
-        #  TODO: check disk for existing ledger and blockchain. Only make new instance if not found.
         self.ledger = Ledger(node_id)
         self.blockchain = BlockChain(self.node_id, self.ledger)
 
