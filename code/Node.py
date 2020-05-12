@@ -192,7 +192,7 @@ class Node:
         while _hash > self.hash_difficulty:
             count +=1
             if not self.reset_mine_function:  # keep hashing unless a new block was received
-                if count > 50000:
+                if count > 5000:
                     print('Computing Hash: ', _hash[:10], '...')  # Show every 5000th hash to show functionality
                     count = 0
                 new_block['nonce'] += 1
