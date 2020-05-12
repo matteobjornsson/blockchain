@@ -131,8 +131,6 @@ class Node:
                 self.process_incoming_block()
 
             elif self.transaction_queue:  # check if tx queue is empty
-                ############################################## reference for video
-                ##############################################
                 tx_to_mine = copy.deepcopy(self.transaction_queue) # gram transactions to mine
                 next_index = self.blockchain.get_last_block().index + 1 # designate next index
                 # verify transactions!
@@ -147,13 +145,9 @@ class Node:
                         if len(self.received_blocks) > 0 and self.received_blocks[0].index >= new_block.index:
                             print('block already exists at that index! discarding mined block')
                         else:
-                            ############################################## reference for video
-                            ##############################################
                             self.ledger.add_balance_state(return_value[0], new_block.index)
                             self.blockchain.add_block(new_block)
                             self.send_msg(new_block_json, 'Block')
-                            ############################################## reference for video
-                            ##############################################
                             print("\nmined a new block and added to blockchain!: \n", "Index: ", new_block.index, '\n',
                                   "Previous Hash: ",
                                   new_block.prevHash, '\n', "Hash: ", new_block.hash, '\n')
@@ -196,8 +190,6 @@ class Node:
 
         # keep hashing the block until the hash meets the required difficulty
         count = 0
-        ############################################## reference for video
-        ##############################################
         while _hash > self.hash_difficulty:
             count +=1
             if not self.reset_mine_function:  # keep hashing unless a new block was received
