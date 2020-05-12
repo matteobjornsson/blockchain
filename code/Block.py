@@ -86,12 +86,8 @@ class Block:
         """
         block_dict = copy.deepcopy(self.__dict__)
         block_dict['transactions'] = [str(tx) for tx in block_dict['transactions']]
-        # print("\nblock_dict in json format:\n", json.dumps(block_dict), '\n')
         incoming_hash = block_dict.pop('hash')  # remove hash from object to verify the rest of the contents
-        # print('print json block to verify, sans hash, followed by hash\n', json.dumps(block_dict), incoming_hash)
         verify_hash = hashlib.sha256(json.dumps(block_dict).encode()).hexdigest()  # recompute hash value of contents
-        # print('verify_hash', verify_hash)
-        # print(type(verify_hash), type(incoming_hash))
         return verify_hash == incoming_hash
 
 

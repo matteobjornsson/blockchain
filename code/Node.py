@@ -61,13 +61,12 @@ class Node:
 
         :param str node_id: one of '0', '1', '2', or '3', the possible nodes in network
         """
-        self.difficulty = 5
+        self.difficulty = 4
         _max = 'f' * 64
         self.hash_difficulty = _max.replace('f', '0', self.difficulty)
 
         self.node_id = node_id
         self.file_path = '../files/blockchain' + node_id + '.txt'
-        #  TODO: check disk for existing ledger and blockchain. Only make new instance if not found.
         self.ledger = Ledger(node_id)
         self.blockchain = BlockChain(self.node_id, self.ledger)
 
@@ -108,7 +107,6 @@ class Node:
                   incoming_block.prevHash, '\n', "Hash: ", incoming_block.hash, '\n')
             # Nodes must always mine on the longest chain, so any mining in progress needs to be reset
             self.received_blocks.append(incoming_block)
-            # print('length of received blocks list: ', len(self.received_blocks))
             self.reset_mine_function = True
             print('reset mining true')
 
@@ -119,7 +117,6 @@ class Node:
             # if the block is valid, then we need to remove all transactions from our own tx queue
             delete_transactions = copy.deepcopy(incoming_block.transactions)
             self.transaction_queue = [x for x in self.transaction_queue if x not in delete_transactions]
-            # print('transactions after deletion ', self.transaction_queue)
 
     def mining_thread(self):
         """
@@ -137,22 +134,13 @@ class Node:
                 next_index = self.blockchain.get_last_block().index + 1
 
                 verified_bool, return_value = self.ledger.verify_transaction(tx_to_mine, next_index)
-                # print('verified transaction , returned ', str(verified_bool))
                 if verified_bool:
                     # verified_bool returns True with new balance
-                    # print('verification successful change of ', return_value)
                     new_block_json = self.hash_block(tx_to_mine, next_index)
-                    # print("lenght of mined block(should be 0 if reset mine == True", len(new_block_json))
                     # hash_block() returns empty ('false') string if mining was interrupted by discovery of new block
                     if new_block_json:  # mining was not interrupted
                         new_block = Block(new_block_json)
                         # last check before adding to blockchain that mined block is indeed the longest:
-                        # print("length of received blocks list pre add mined block: ",
-                        #       len(self.received_blocks))
-                        #
-                        # if len(self.received_blocks) > 0:
-                        #     print('\nIndex of first block in received blocks pre add mined block: ',
-                        #           self.received_blocks[0].index)
                         if len(self.received_blocks) > 0 and self.received_blocks[0].index >= new_block.index:
                             print('block already exists at that index! discarding mined block')
                         else:
@@ -168,10 +156,7 @@ class Node:
                         continue
                 else:
                     #  if not valid, verified_bool returns False with list of bad transaction IDs. Delete bad tx
-                    # print('verification unsuccessful, returned following transactions ', return_value)
-                    # print('txs after receiving block, before adjustment', self.transaction_queue)
                     self.transaction_queue = [tx for tx in self.transaction_queue if tx.unique_id not in return_value]
-                    # print('txs after receiving block', self.transaction_queue)
             else:
                 pass
             count += 1
@@ -207,25 +192,20 @@ class Node:
         while _hash > self.hash_difficulty:
             count +=1
             if not self.reset_mine_function:  # keep hashing unless a new block was received
-                if count > 50000:
-                    print('Generating hashes: ', _hash[:8], '...')
+                if count > 5000:
+                    print(_hash)  # Show every 5000th hash to show functionality
                     count = 0
                 new_block['nonce'] += 1
                 _hash = hashlib.sha256(json.dumps(new_block).encode()).hexdigest()
-                # print(_hash)
             else:  # if a new block was received, break and exit the function, returning an empty string (falsy)
-                # print('mining shouldve been reset, entered break of while loop')
                 _hash = ''
                 break
 
         if _hash:  # finished mine function uninterrupted, successfully mined new block
-            # print('found correct hash')
             new_block['hash'] = _hash
             new_block_json = json.dumps(new_block)
             # clear mined transactions from queue
-            # print('txs ater mining before adjustment', self.transaction_queue)
             self.transaction_queue = [x for x in self.transaction_queue if x not in transactions]
-            # print('txs ater mining', self.transaction_queue)
             if self.reset_mine_function:
                 return ''
             else:
@@ -251,18 +231,6 @@ if __name__ == '__main__':
     arg = sys.argv[1]
 
     n = Node(arg)
-    # n.handle_incoming_message(
-    #     {'type': 'Transaction', 'contents': str(Transaction(_to='node1', _from='node3', amount=1))})
-    # print('-----------------------------------------------------\n' * 3)
-    # n.handle_incoming_message(
-    #     {'type': 'Transaction', 'contents': str(Transaction(_to='node3', _from='node1', amount=.22))})
-    #
-    # print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&\n' * 3)
 
-
-    # n.stop_mine_function = True
-    # n.messenger.run = False
-    #
-    # n.mine_thread.join()
 
 
