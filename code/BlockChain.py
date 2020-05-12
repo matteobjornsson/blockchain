@@ -81,7 +81,7 @@ class BlockChain:
         elif block.index > len(self.blockchain):
             self.rebuild_longest_chain(block)
             print('********************************\n********************************')
-            print('\n\n NEW LONGEST CHAIN \n\n'')
+            print('\n\n NEW LONGEST CHAIN \n\n')
             print('********************************\n********************************\n\n')
             return False
         return False
