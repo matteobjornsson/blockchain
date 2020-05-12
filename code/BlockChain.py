@@ -173,7 +173,7 @@ class BlockChain:
                             if k2 == 'timestamp':
                                 tx_short_dict[k2] = v2[11:22]
                             elif k2 == 'unique_id':
-                                tx_short_dict[k2] = v2[:5] + '...'
+                                tx_short_dict[k2] = v2[:4] + '...'
                         blockchain_string += '\t' + str(tx_short) + '\n'
                 else:
                     blockchain_string += k + ': ' + str(v) + '\n'
