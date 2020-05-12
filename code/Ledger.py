@@ -138,7 +138,7 @@ class Ledger:
         # dump to pickle
         ledger_string = 'Ledger: \n'
         for entry in self.blockchain_balances:
-            print(entry)
+            #print(entry)
             ledger_string += str(entry) + '\n'
 
         text_file = open(self.file_path, "w")
