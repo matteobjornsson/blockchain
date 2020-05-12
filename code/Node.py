@@ -193,7 +193,7 @@ class Node:
             count +=1
             if not self.reset_mine_function:  # keep hashing unless a new block was received
                 if count > 5000:
-                    print(_hash)  # Show every 5000th hash to show functionality
+                    print('Computing Hash: ', _hash[:10], '...')  # Show every 5000th hash to show functionality
                     count = 0
                 new_block['nonce'] += 1
                 _hash = hashlib.sha256(json.dumps(new_block).encode()).hexdigest()
