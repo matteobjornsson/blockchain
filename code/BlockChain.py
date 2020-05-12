@@ -150,17 +150,33 @@ class BlockChain:
         :return: str. String representation of the BlockChain
         """
         blockchain_string = 'Node ' + self.node_id + ' Blockchain: \n'
+        stack = collections.deque()
         for block in self.blockchain:
+            stack.append(block)
+        for i in range(0, len(stack)):
+            block = stack.pop()
             blockchain_string += '-'*75 + '\n'
             for k, v in block.__dict__.items():
                 if k == 'transactions':
                     blockchain_string += k + ':\n'
                     for tx in v:
-                        blockchain_string += '\t' + str(tx) + '\n'
+                        print(type(tx), tx)
+                        # <class 'Transaction.Transaction'> {"to_node": "1", "from_node": "2", "amount": 0.16, "timestamp": "2020-05-12 12:46:34.582549", "unique_id": "c60ba8a00fa3239bf5ea306b7dcf720ddf5621afcedbafcfd5c0cbdeb4831638"}
+                        tx_short = Transaction(str(tx))
+                        tx_short_dict = tx_short.__dict__
+                        for k2, v2 in tx_short_dict.items():
+                            # "2020-05-12 18:20:25.659289"
+                            if k2 == 'timestamp':
+                                tx_short_dict[k2] = v2[11:22]
+                            elif k2 == 'unique_id':
+                                tx_short_dict[k2] = v2[:5] + '...'
+                        blockchain_string += '\t' + str(tx_short) + '\n'
                 else:
                     blockchain_string += k + ': ' + str(v) + '\n'
             blockchain_string += '-' * 75 + '\n'
         return blockchain_string
+
+
 
     def create_or_read_file(self):
         """

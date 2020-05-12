@@ -86,12 +86,11 @@ class Ledger:
         :param index: int. index at which tx are applied
         :return: None
         """
-        change = self.blockchain_balances[index - 1]  # get previous state
+        change = copy.deepcopy(self.blockchain_balances[index - 1])  # get previous state
         for tx in transactions:  # apply all transactions to that state
             change[tx.from_node] -= tx.amount
             change[tx.to_node] += tx.amount
         self.add_balance_state(change, index)
-        self.write_to_disk()
 
     def get_curr_balance_for_node(self, node) -> float:
         """
