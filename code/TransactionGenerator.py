@@ -67,4 +67,4 @@ if __name__ == '__main__':
             else:
                 sleep(random.uniform(0.1, 1))
                 txg.send(msg_dict, node)
-        sleep(.5)
+        sleep(2)
