@@ -1,7 +1,7 @@
 from time import sleep, clock
 from datetime import datetime
 from threading import Thread
-import boto3, botocore, random
+import boto3, botocore
 
 message_queue_URLs = {
 	'0': 'https://sqs.us-east-1.amazonaws.com/622058021374/0.fifo',
