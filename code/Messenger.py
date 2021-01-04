@@ -12,10 +12,10 @@ message_queue_URLs = {
 
 class Messenger:
 	"""
-	This class is a generic message handler for the RAFT system, using hardcoded
-	SQS queues to communicate with other nodes. The nodes accessible using this
-	class are  '0', '1', '2', '3'
-	This class requires the handle_incoming_message(message) interface
+	This class is a generic message handler using hardcoded SQS queues to 
+	communicate with other nodes. The nodes accessible using this class are  
+	'0', '1', '2', '3'
+	** This class requires the handle_incoming_message(message) interface **
 
 	methods:
 		__init__(id, target) : constructor
@@ -28,7 +28,7 @@ class Messenger:
 	def __init__(self, id: str, target, run: bool=True):
 		"""
 		Messenger constructor. Takes id from list
-		'0', '1', '2', '3', '4', 'leader', 'client-blue', 'client-red'.
+		'0', '1', '2', '3'.
 		Constructor must be passed a reference to the class that is using it.
 		That class must implement handle_incoming_message(message: dict)
 		"""
