@@ -125,4 +125,6 @@ hash: 00000ba01eb6ec391cede69aa2636148267ab21d7b86dc54d49f94847db436e6
 ...
 
 ```
+**Video**
+---
 If you are still here, [this](https://www.youtube.com/watch?v=37zh4TbVYt8) is a video walking through the running blockchain and code. 
