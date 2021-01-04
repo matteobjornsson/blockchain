@@ -57,7 +57,6 @@ This command can be run from any machine that has the AWS credentials set up. Th
 ```bash
 watch cat blockchain0.txt
 ```
-<<<<<<< HEAD
 The blockchain is continually printed to file in `blockchain#.txt` for a human readable status on the node's blockchain:
 
 ```
@@ -102,6 +101,3 @@ hash: 00000ba01eb6ec391cede69aa2636148267ab21d7b86dc54d49f94847db436e6
 ...
 
 ```
-=======
-The blockchain is continually printed to file in `blockchain#.txt` for a human readable status on the node's blockchain.
->>>>>>> 3fd4979fc9a3dec95bc3d582514d1e15f1bac661
