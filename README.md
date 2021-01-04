@@ -53,3 +53,8 @@ Each instance is started by running the `Node.py` file with the node ID as a com
 python3 TransactionGenerator.py
 ```
 This command can be run from any machine that has the AWS credentials set up. This will start sending randomly generated transactions to every node in the network. This file currently sends the transaction to 3 out of 4 nodes randomly to demonstrate that transactions will propagate through the network and intentionally cause some conflicts between nodes to demonstrate self correction. 
+
+```bash
+watch cat blockchain0.txt
+```
+The blockchain is continually printed to file in `blockchain#.txt` for a human readable status on the node's blockchain.
