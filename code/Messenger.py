@@ -4,10 +4,10 @@ from threading import Thread
 import boto3, botocore
 
 message_queue_URLs = {
-	'0': 'https://sqs.us-east-1.amazonaws.com/622058021374/0.fifo',
-	'1': 'https://sqs.us-east-1.amazonaws.com/622058021374/1.fifo',
-	'2': 'https://sqs.us-east-1.amazonaws.com/622058021374/2.fifo',
-	'3': 'https://sqs.us-east-1.amazonaws.com/622058021374/3.fifo',
+	'0': 'https://sqs.us-east-1.amazonaws.com/000000000000/0.fifo',
+	'1': 'https://sqs.us-east-1.amazonaws.com/000000000000/1.fifo',
+	'2': 'https://sqs.us-east-1.amazonaws.com/000000000000/2.fifo',
+	'3': 'https://sqs.us-east-1.amazonaws.com/000000000000/3.fifo',
 	}
 
 class Messenger:
