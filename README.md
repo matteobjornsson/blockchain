@@ -96,9 +96,12 @@ timestamp: 2020-05-08 08:40:02.965587
 nonce: 33022
 transactions:
 	{
-        "to_node": "node3", "from_node": "node2", "amount": 0.68, "timestamp": "2020-05-08 08:40:02.201761", 
+        "to_node": "node3", 
+        "from_node": "node2", 
+        "amount": 0.68, 
+        "timestamp": "2020-05-08 08:40:02.201761", 
         "unique_id": "0b31887675c5d82241999c6e17294d163d9904bf829287ad8b6f689b4ba4d98f"
-    }
+        }
 hash: 00000ba01eb6ec391cede69aa2636148267ab21d7b86dc54d49f94847db436e6
 ------------------------------------------------------------------------
 
