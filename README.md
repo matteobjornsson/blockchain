@@ -57,4 +57,47 @@ This command can be run from any machine that has the AWS credentials set up. Th
 ```bash
 watch cat blockchain0.txt
 ```
-The blockchain is continually printed to file in `blockchain#.txt` for a human readable status on the node's blockchain.
+The blockchain is continually printed to file in `blockchain#.txt` for a human readable status on the node's blockchain:
+
+```
+Node 0 Blockchain: 
+---------------------------------------------------------------------------
+index: 18
+prevHash: 0000423c1c0a6708a85515294373c463ee266e0678d5cab449c7026f9727e9f5
+timestamp: 2020-05-08 08:40:10.680732
+nonce: 8550
+transactions:
+	{"to_node": "node2", "from_node": "node3", "amount": 0.13, "timestamp": "2020-05-08 08:40:07.405769", "unique_id": "f6383268404d95beda79dfb7b675b5fadb661a690cdab46215c85798ceec8f44"}
+hash: 0000823c45c9dad48d7c65a650128c8b9dc368efab706d73657c66b51343e416
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+index: 17
+prevHash: 00009504e5078d34f2003553d8425077c81f47d9919455f0f17e641adeffe0fc
+timestamp: 2020-05-08 08:40:10.055551
+nonce: 1164
+transactions:
+	{"to_node": "node2", "from_node": "node3", "amount": 0.13, "timestamp": "2020-05-08 08:40:07.405769", "unique_id": "f6383268404d95beda79dfb7b675b5fadb661a690cdab46215c85798ceec8f44"}
+hash: 0000423c1c0a6708a85515294373c463ee266e0678d5cab449c7026f9727e9f5
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+index: 16
+prevHash: 00000ba01eb6ec391cede69aa2636148267ab21d7b86dc54d49f94847db436e6
+timestamp: 2020-05-08 08:40:08.612753
+nonce: 20947
+transactions:
+	{"to_node": "node2", "from_node": "node3", "amount": 0.13, "timestamp": "2020-05-08 08:40:07.405769", "unique_id": "f6383268404d95beda79dfb7b675b5fadb661a690cdab46215c85798ceec8f44"}
+hash: 00009504e5078d34f2003553d8425077c81f47d9919455f0f17e641adeffe0fc
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+index: 15
+prevHash: 00003dacd48c04de6ecb6d049ebd2c12d6e56d425f1b6392fcc3719bd6a01667
+timestamp: 2020-05-08 08:40:02.965587
+nonce: 33022
+transactions:
+	{"to_node": "node3", "from_node": "node2", "amount": 0.68, "timestamp": "2020-05-08 08:40:02.201761", "unique_id": "0b31887675c5d82241999c6e17294d163d9904bf829287ad8b6f689b4ba4d98f"}
+hash: 00000ba01eb6ec391cede69aa2636148267ab21d7b86dc54d49f94847db436e6
+------------------------------------------------------------------------
+
+...
+
+```
