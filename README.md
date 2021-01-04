@@ -24,7 +24,7 @@ This code depends on the Amazon [AWS SDK for Python (Boto 3)](https://aws.amazon
 ```bash
 pip install boto3
 ```
-This project was designed to run on AWS EC2 instances. 
+This project was designed to run on AWS EC2 instances. However, as long as the Amazon SQS queues are set up, these four nodes could just as well be run all on a local machine, even in the same directory (the names of the files written do disk differ by the node number). 
 
 ```bash
 aws configure
