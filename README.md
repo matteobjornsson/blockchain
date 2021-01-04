@@ -30,7 +30,7 @@ This project was designed to run on AWS EC2 instances.
 aws configure
 ```
 
-![ec2](img/ec2Instances.png)
+![ec2](img/ec2.png)
 
 For anyone still getting used to setting up AWS services, we found the easiest way to get the instance up and running was to install git, clone this repo, install python3, pip install boto3, and finally use the `aws configure` command to set up the instance [aws credentials](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/setup-credentials.html). In our case the credentials lived in `~/.aws/credentials`. 
 
