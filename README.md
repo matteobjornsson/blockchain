@@ -67,7 +67,13 @@ prevHash: 0000423c1c0a6708a85515294373c463ee266e0678d5cab449c7026f9727e9f5
 timestamp: 2020-05-08 08:40:10.680732
 nonce: 8550
 transactions:
-	{"to_node": "node2", "from_node": "node3", "amount": 0.13, "timestamp": "2020-05-08 08:40:07.405769", "unique_id": "f6383268404d95beda79dfb7b675b5fadb661a690cdab46215c85798ceec8f44"}
+	{
+        "to_node": "node2", 
+        "from_node": "node3", 
+        "amount": 0.13, 
+        "timestamp": "2020-05-08 08:40:07.405769", 
+        "unique_id": "f6383268404d95beda79dfb7b675b5fadb661a690cdab46215c85798ceec8f44"
+        }
 hash: 0000823c45c9dad48d7c65a650128c8b9dc368efab706d73657c66b51343e416
 ---------------------------------------------------------------------------
 ---------------------------------------------------------------------------
@@ -76,7 +82,13 @@ prevHash: 00009504e5078d34f2003553d8425077c81f47d9919455f0f17e641adeffe0fc
 timestamp: 2020-05-08 08:40:10.055551
 nonce: 1164
 transactions:
-	{"to_node": "node2", "from_node": "node3", "amount": 0.13, "timestamp": "2020-05-08 08:40:07.405769", "unique_id": "f6383268404d95beda79dfb7b675b5fadb661a690cdab46215c85798ceec8f44"}
+	{
+        "to_node": "node2", 
+        "from_node": "node3", 
+        "amount": 0.13, 
+        "timestamp": "2020-05-08 08:40:07.405769", 
+        "unique_id": "f6383268404d95beda79dfb7b675b5fadb661a690cdab46215c85798ceec8f44"
+        }
 hash: 0000423c1c0a6708a85515294373c463ee266e0678d5cab449c7026f9727e9f5
 ---------------------------------------------------------------------------
 ---------------------------------------------------------------------------
@@ -85,8 +97,13 @@ prevHash: 00000ba01eb6ec391cede69aa2636148267ab21d7b86dc54d49f94847db436e6
 timestamp: 2020-05-08 08:40:08.612753
 nonce: 20947
 transactions:
-	{"to_node": "node2", "from_node": "node3", "amount": 0.13, "timestamp": "2020-05-08 08:40:07.405769", 
-    "unique_id": "f6383268404d95beda79dfb7b675b5fadb661a690cdab46215c85798ceec8f44"}
+	{
+        "to_node": "node2", 
+        "from_node": "node3", 
+        "amount": 0.13, 
+        "timestamp": "2020-05-08 08:40:07.405769", 
+        "unique_id": "f6383268404d95beda79dfb7b675b5fadb661a690cdab46215c85798ceec8f44"
+        }
 hash: 00009504e5078d34f2003553d8425077c81f47d9919455f0f17e641adeffe0fc
 ---------------------------------------------------------------------------
 ---------------------------------------------------------------------------
