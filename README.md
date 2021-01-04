@@ -6,7 +6,7 @@ A proof-of-work blockhain implementation written in Python by Amy Peerlinck and 
 
 **The Blockchain**
 ---
-This blockchain network at the moment is constrained to a narrow scope for the purpose of demonstration, but could in theory be expanded to a much larger number of nodes. All nodes have a message queue that is known by every node (read: hardcoded queue addresses). Here the nodes are four Amazon EC2 instances that communicate using Amazon Simple Queue Service queues. An interesting extension of this code would be to enable adding and removing nodes to the live network. 
+This blockchain network is constrained to a narrow scope for the purpose of demonstration, but could in theory be expanded to a much larger number of nodes. All nodes have a message queue that is known by every node (read: hardcoded queue addresses). Here the nodes are four Amazon EC2 instances that communicate using Amazon Simple Queue Service queues. An interesting extension of this code would be to enable adding and removing nodes to the live network. 
 
 This implementation, at scale, would in theory achieve the  probabilistically immutable ledger guaranteed by, and desired of, any blockchain. 
 
@@ -57,6 +57,7 @@ This command can be run from any machine that has the AWS credentials set up. Th
 ```bash
 watch cat blockchain0.txt
 ```
+<<<<<<< HEAD
 The blockchain is continually printed to file in `blockchain#.txt` for a human readable status on the node's blockchain:
 
 ```
@@ -101,3 +102,6 @@ hash: 00000ba01eb6ec391cede69aa2636148267ab21d7b86dc54d49f94847db436e6
 ...
 
 ```
+=======
+The blockchain is continually printed to file in `blockchain#.txt` for a human readable status on the node's blockchain.
+>>>>>>> 3fd4979fc9a3dec95bc3d582514d1e15f1bac661
